@@ -1,17 +1,58 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+import ReactDOM from "react-dom";
+import React, { Component, Suspense } from "react";
+import { Canvas } from "react-three-fiber";
+import { OrbitControls } from "@react-three/drei";
+import Text from "./Text";
+import { Button } from "./Button";
 
-ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-  document.getElementById('root')
-);
+class App extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      count: 1,
+      canvasStyle: {
+        width: "100vw",
+        height: "100vh",
+      },
+    };
+  }
+  handleCount(value) {
+    this.setState((prevState) => ({ count: prevState.count + value }));
+  };
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
+  render() {
+    return (
+      <>
+        <Canvas
+          style={this.state.canvasStyle}
+          onCreated={({ gl }) => gl.setClearColor("lightblue")}
+        >
+          <ambientLight intensity={2} />
+          <pointLight position={[40, 40, 40]} />
+          <Suspense fallback={null}>
+            <Text hAlign="left" position={[0, 0, 0]} children="Elie" size={3} />
+            <Text
+              hAlign="right"
+              position={[2, 0, 0]}
+              children={this.state.count.toString()}
+              size={1}
+            />
+            <OrbitControls />
+          </Suspense>
+        </Canvas>
+        <Button
+          sign="+"
+          count={this.state.count}
+          updateCount={this.handleCount.bind(this)}
+        />
+        <Button
+          sign="-"
+          count={this.state.count}
+          updateCount={this.handleCount.bind(this)}
+        />
+      </>
+    );
+  }
+}
+
+ReactDOM.render(<App />, document.getElementById("root"));
